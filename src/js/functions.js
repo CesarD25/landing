@@ -62,4 +62,4 @@ let fetchProducts =  (url) => {
         });
 }
 
-export { fetchProducts }
+export { fetchCategories, fetchProducts }
