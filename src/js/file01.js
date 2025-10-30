@@ -2,7 +2,51 @@
 
 import { fetchProducts } from "./functions.js";
 import { fetchCategories } from "./functions.js";
-import { saveVotes } from "./firebase.js";
+import { saveVotes, getVotes } from "./firebase.js";
+
+let displayVotes = async () => {
+    try {
+        let result = await getVotes();
+        if (result.success) {
+            // Agrupar votos por productId
+            let voteCounts = {};
+            Object.values(result.data).forEach(vote => {
+                voteCounts[vote.productId] = (voteCounts[vote.productId] || 0) + 1;
+            });
+
+            let container = document.getElementById("results");
+            let tableHTML = `
+                <table class="min-w-full text-left text-sm font-light">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Total Votos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            // Crear fila para cada producto con su total de votos
+            Object.entries(voteCounts).forEach(([productId, total]) => {
+                tableHTML += `
+                    <tr>
+                        <td>Producto ${productId}</td>
+                        <td>${total}</td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHTML;
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 let enableForm = () => {
     const form = document.getElementById("form_voting");
@@ -110,5 +154,5 @@ const showVideo = () => {
     renderProducts();
     renderCategories();
     enableForm();
-    
+    displayVotes();
 })();
