@@ -14,6 +14,31 @@ const app = initializeApp(firebaseConfig);
 
 const database = getDatabase(app);
 
+let getVotes = async () => {
+    try {
+        const votesRef = ref(database, 'votes');
+        const snapshot = await get(votesRef);
+
+        if (snapshot.exists()) {
+            return {
+                success: true,
+                data: snapshot.val()
+            };
+        } else {
+            return {
+                success: false,
+                message: 'No hay votos registrados'
+            };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            message: error.message
+        };
+    }
+};
+
+
 let saveVotes = (productId) => {
     // Referencia a la colección 'votes'
     const votesRef = ref(database, 'votes');
@@ -39,4 +64,4 @@ let saveVotes = (productId) => {
         });
 };
 
-export { saveVotes };
+export { saveVotes, getVotes };
